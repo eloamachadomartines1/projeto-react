@@ -6,9 +6,9 @@ export default function Header(){
         <header>
             <nav>
                 <ul>
-                    <li><Link href='/sobre'/></li>
-                    <li></li>
-                    <li></li>
+                    <li><Link href='/'>Home</Link></li>
+                    <li><Link href='/contato'>Contato</Link></li>
+                   <li><Link href='/sobre'>Sobre</Link></li>
                 </ul>
             </nav>
         </header>
