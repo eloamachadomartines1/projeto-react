@@ -3,7 +3,7 @@ import styles from './Footer.module.css'
 export default function Footer (){
     return(
         <footer>
-            <p>Meu footer</p>
+            <p>olha meu passarinho🥳</p>
         </footer>
     )
 }
