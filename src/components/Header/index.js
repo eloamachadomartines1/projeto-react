@@ -1,9 +1,17 @@
+'use client'
 import Link from 'next/link'
 import styles from './Header.module.css'
+import Image from 'next/image'
+import { useState } from 'react'
 
 export default function Header(){
+    const [menu, setMenu] = useState('/icons/close.png')
     return(
-        <header>
+        <div className={styles.divHeader}>
+            <button>
+                <Image src={menu} width={30} height={30} alt='menu'/>
+            </button>
+        <header className={styles.header}>
             <nav>
                 <ul>
                     <li><Link href='/'>Home</Link></li>
@@ -12,5 +20,6 @@ export default function Header(){
                 </ul>
             </nav>
         </header>
+        </div>
     )
 }
