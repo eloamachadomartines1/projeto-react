@@ -8,7 +8,7 @@ export default function Header(){
     const [menu, setMenu] = useState('/icons/close.png')
     return(
         <div className={styles.divHeader}>
-            <button>
+            <button className={styles.button}>
                 <Image src={menu} width={30} height={30} alt='menu'/>
             </button>
         <header className={styles.header}>
