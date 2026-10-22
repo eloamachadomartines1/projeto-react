@@ -8,8 +8,13 @@ export default function Header(){
     const [menu, setMenu] = useState('/icons/close.png')
     return(
         <div className={styles.divHeader}>
-            <button className={styles.button}>
+            <button className={styles.button}
+             onClick={() => setMenu(menu === '/icons/close.png' ?
+                '/icons/open.png' : '/icons/close.png'
+             )}
+            >
                 <Image src={menu} width={30} height={30} alt='menu'/>
+               
             </button>
         <header className={styles.header}>
             <nav>
