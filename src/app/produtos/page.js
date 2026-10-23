@@ -25,6 +25,14 @@ export default function Produtos() {
         fetchProds();
     }, []);
 
+// CRIE UM FETCHCATS PARA BUSCAR AS CATEGORIAS...
+
+
+
+
+
+
+
     return (
 
         <div>
