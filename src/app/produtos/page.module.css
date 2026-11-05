@@ -10,4 +10,9 @@
 
 .tbl th {
     background-color: aqua;
+
+}
+
+.tbl tr {
+    cursor: pointer;
 }
