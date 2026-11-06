@@ -8,6 +8,7 @@ export default function Produtos() {
     const [prods, setProds] = useState(null);
     const [cats, setCats] = useState(null);
     const [prodSelected, setProdSelected] = useState(null);
+    const [busca, setBusca] = useState('');
 
     useEffect(() => {
         const fetchProds = async () => {
@@ -47,10 +48,22 @@ const getNomeCategoria = (id_categoria) => {
     return categoria ? categoria.nome : 'Categoria Indefinida';
 }
 
+// crie a função buscar
+const filtro = prods?.filter(p => p.nome.toLowerCase().includes(busca. toLocaleLowerCase()))
+
+
+//  crie a rota /produtos/new
     return (
 
         <div>
             <h1>Produtos</h1>
+            {filtro && 
+                filtro.map((f) =>(
+                    <p key ={f.id}> {f.nome}</p>
+                ))
+            }
+            {/* crie um input aqui e sempre que o usuário alterar o conteúdo do input, atualize o estado de busca */}
+            <input type="text" placeholder="Busque um produto" onChange={(e) => setBusca(e.target.value)} value={busca} />
             {prods === null ?
                 <p>Carregando lista de produtos...</p> :
                 <div>
@@ -67,7 +80,7 @@ const getNomeCategoria = (id_categoria) => {
                         </thead>
                         <tbody>
                             {prods.map((prod) => (
-                                <tr key={prod.id} onClick={() => prodSelected(prod)}>
+                                <tr key={prod.id} onClick={() => setProdSelected(prod)}>
                                     <td>{prod.id}</td>
                                     <td>{prod.nome}</td>
                                     <td>{prod.descricao}</td>
@@ -82,7 +95,7 @@ const getNomeCategoria = (id_categoria) => {
                 </div>
             } 
             {/* {como criar uma redenrização condicional com base no estado prod} */}
-            {prodSelected && <CardProd/>}
+            {prodSelected && <CardProd produto={prodSelected}/>}
         </div>
 
     );
