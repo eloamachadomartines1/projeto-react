@@ -1,3 +1,84 @@
-.paragrafo{
-  color:mediumvioletred;
+.cartaoPrincipal {
+  background-color: #ffffff;
+  border: 1px solid #d6c5c9;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.etiqueta {
+  display: inline-block;
+  background-color: #f5dce0;
+  color: #6b0f26;
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 4px 12px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.titulo {
+  font-size: 1.8rem;
+  color: #3d0814;
+  margin-bottom: 8px;
+}
+
+.descricao {
+  color: #524347;
+  margin-bottom: 20px;
+}
+
+.caixaDupla {
+  background-color: #faf5f6;
+  padding: 16px;
+  border-left: 4px solid #800f2f;
+}
+
+.caixaDupla h3 {
+  font-size: 0.85rem;
+  color: #6e595e;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.listaNomes {
+  list-style: none;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #3d0814;
+}
+
+.gradeAtalhos {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 769px) {
+  .gradeAtalhos {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.atalho {
+  background-color: #ffffff;
+  border: 1px solid #d6c5c9;
+  padding: 20px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s;
+}
+
+.atalho:hover {
+  border-color: #800f2f;
+  background-color: #fdfafb;
+}
+
+.atalho h3 {
+  color: #590d22;
+  margin-bottom: 6px;
+}
+
+.atalho p {
+  color: #524347;
+  font-size: 0.9rem;
 }

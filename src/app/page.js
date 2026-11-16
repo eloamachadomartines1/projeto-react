@@ -1,17 +1,40 @@
-
+import Link from "next/link";
 import styles from "./page.module.css";
-import Image from "next/image";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
+    <div>
+      <section className={styles.cartaoPrincipal}>
+        <span className={styles.etiqueta}>4º Bimestre - Front-End</span>
+        <h1 className={styles.titulo}>Zuuuuca - Controle de Estoque</h1>
+        <p className={styles.descricao}>
+          Aplicação web para consulta de produtos, categorias, clientes e registro de pedidos.
+        </p>
 
-        <h1>oi pessoal, bem vindos ao meu site 😼</h1>
-        <p className={styles.paragrafo}>oi pessoal</p>
-        {/* <Image src='/images.jpg' width={300} heigth={300} alt="passaro" /> */}
-        <Image src='/images.jpg' width={300} height={300} alt="Passaro" loading="eager"/>
-      </main>
+        <div className={styles.caixaDupla}>
+          <h3>Desenvolvido por</h3>
+          <ul className={styles.listaNomes}>
+            <li>Eloá Machado Martines</li>
+          </ul>
+        </div>
+      </section>
+
+      <section className={styles.gradeAtalhos}>
+        <Link href="/pedidos" className={styles.atalho}>
+          <h3>Listar Pedidos</h3>
+          <p>Consulte os pedidos realizados e os itens vinculados a cada um.</p>
+        </Link>
+
+        <Link href="/pedidos/novo" className={styles.atalho}>
+          <h3>Criar Pedido</h3>
+          <p>Selecione um cliente e adicione produtos com suas quantidades.</p>
+        </Link>
+
+        <Link href="/produtos" className={styles.atalho}>
+          <h3>Catálogo de Produtos</h3>
+          <p>Visualize os produtos cadastrados e a quantidade em estoque.</p>
+        </Link>
+      </section>
     </div>
   );
 }

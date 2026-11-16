@@ -1,102 +1,83 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import styles from './page.module.css'
-import CardProd from "@/components";
+import { buscarDados } from "@/services/api";
+import styles from "./page.module.css";
 
-export default function Produtos() {
-    const [prods, setProds] = useState(null);
-    const [cats, setCats] = useState(null);
-    const [prodSelected, setProdSelected] = useState(null);
-    const [busca, setBusca] = useState('');
+export default function ProdutosPage() {
+  const [produtos, setProdutos] = useState([]);
+  const [categorias, setCategorias] = useState([]);
+  const [busca, setBusca] = useState("");
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState("");
 
-    useEffect(() => {
-        const fetchProds = async () => {
-            try {
-                const response = await fetch('https://stock.dev.vilhena.ifro.edu.br/api/produtos');
-                if (!response.ok) {
-                    throw new Error(`Erro ao buscar Produtos: ${response.statusText}`);
-                }
-
-                const data = await response.json();
-                console.log(data);
-                setProds(data);
-            } catch (e) {
-                console.log(`${e.message}`);
-            }
-        };
-
-        fetchProds();
-    }, []);
-
-// CRIE UM FETCHCATS PARA BUSCAR AS CATEGORIAS...
-useEffect(() => {
-    const fetchCats = async () => {
-        const response = await fetch('https://stock.dev.vilhena.ifro.edu.br/api/categorias')
-        if (!response.ok){
-            throw new Error(`Erro ao buscar Categorias ${response.statusText}`)
-        }
-        const data = await response.json()
-        console.log(data);
-        setCats(data)
+  useEffect(() => {
+    async function carregar() {
+      try {
+        const [listaProdutos, listaCategorias] = await Promise.all([
+          buscarDados("/produtos"),
+          buscarDados("/categorias"),
+        ]);
+        setProdutos(listaProdutos);
+        setCategorias(listaCategorias);
+      } catch (e) {
+        setErro(e.message);
+      } finally {
+        setCarregando(false);
+      }
     }
-    fetchCats();
-}, [])
+    carregar();
+  }, []);
 
-const getNomeCategoria = (id_categoria) => {
-    const categoria = cats?.find(cat => cat.id === id_categoria);
-    return categoria ? categoria.nome : 'Categoria Indefinida';
-}
+  function obterNomeCategoria(categoriaId) {
+    const cat = categorias.find((c) => c.id === categoriaId);
+    return cat ? cat.nome : "Sem categoria";
+  }
 
-// crie a função buscar
-const filtro = prods?.filter(p => p.nome.toLowerCase().includes(busca. toLocaleLowerCase()))
+  const produtosFiltrados = produtos.filter((p) =>
+    p.nome.toLowerCase().includes(busca.toLowerCase())
+  );
 
+  return (
+    <div>
+      <h1 className={styles.titulo}>Produtos em Estoque</h1>
 
-//  crie a rota /produtos/new
-    return (
+      <input
+        type="text"
+        placeholder="Buscar produto pelo nome..."
+        value={busca}
+        onChange={(e) => setBusca(e.target.value)}
+        style={{
+          width: "100%",
+          padding: "10px",
+          marginBottom: "20px",
+          border: "1px solid #bfa8ad",
+          fontSize: "1rem",
+        }}
+      />
 
-        <div>
-            <h1>Produtos</h1>
-            {filtro && 
-                filtro.map((f) =>(
-                    <p key ={f.id}> {f.nome}</p>
-                ))
-            }
-            {/* crie um input aqui e sempre que o usuário alterar o conteúdo do input, atualize o estado de busca */}
-            <input type="text" placeholder="Busque um produto" onChange={(e) => setBusca(e.target.value)} value={busca} />
-            {prods === null ?
-                <p>Carregando lista de produtos...</p> :
-                <div>
-                    <table className={styles.tbl}>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>NOME</th>
-                                <th>DESCRICAO</th>
-                                <th>CATEGORIA</th>
-                                <th>ESTOQUE</th>
-                                <th>PRECO</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {prods.map((prod) => (
-                                <tr key={prod.id} onClick={() => setProdSelected(prod)}>
-                                    <td>{prod.id}</td>
-                                    <td>{prod.nome}</td>
-                                    <td>{prod.descricao}</td>
-                                    <td>{getNomeCategoria(prod.categoria_id)}</td>
-                                    <td>{prod.quantidade_estoque}</td>
-                                    <td>{prod.preco}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+      {carregando && <p>Carregando lista de produtos...</p>}
+      {erro && <p className={styles.erro}>{erro}</p>}
 
-                </div>
-            } 
-            {/* {como criar uma redenrização condicional com base no estado prod} */}
-            {prodSelected && <CardProd produto={prodSelected}/>}
-        </div>
-
-    );
+      <div className={styles.grade}>
+        {produtosFiltrados.map((prod) => (
+          <div key={prod.id} className={styles.card}>
+            <span className={styles.etiqueta}>
+              #{prod.id} • {obterNomeCategoria(prod.categoria_id)}
+            </span>
+            <h2>{prod.nome}</h2>
+            {prod.descricao && (
+              <p className={styles.detalhe}>{prod.descricao}</p>
+            )}
+            <p className={styles.detalhe}>
+              Preço: <strong>R$ {Number(prod.preco).toFixed(2)}</strong>
+            </p>
+            <p className={styles.detalhe}>
+              Estoque: <strong>{prod.quantidade_estoque} un.</strong>
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
