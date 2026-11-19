@@ -23,12 +23,13 @@ export default function ListarPedidosPage() {
           buscarDados("/produtos"),
         ]);
 
-        setPedidos(Array.isArray(resPedidos) ? resPedidos : resPedidos.data || []);
-        setItens(Array.isArray(resItens) ? resItens : resItens.data || []);
-        setClientes(Array.isArray(resClientes) ? resClientes : resClientes.data || []);
-        setProdutos(Array.isArray(resProdutos) ? resProdutos : resProdutos.data || []);
-      } catch {
-        setErro("Não foi possível carregar os pedidos.");
+        // Coloca os pedidos mais recentes no topo da lista
+        setPedidos([...resPedidos].reverse());
+        setItens(resItens);
+        setClientes(resClientes);
+        setProdutos(resProdutos);
+      } catch (e) {
+        setErro(e.message || "Não foi possível carregar os pedidos.");
       } finally {
         setCarregando(false);
       }
@@ -38,13 +39,13 @@ export default function ListarPedidosPage() {
   }, []);
 
   function obterNomeCliente(id) {
-    const cliente = clientes.find((c) => c.id === id);
-    return cliente ? cliente.nome || cliente.name : `Cliente #${id}`;
+    const cliente = clientes.find((c) => Number(c.id) === Number(id));
+    return cliente ? cliente.nome : `Cliente #${id}`;
   }
 
   function obterNomeProduto(id) {
-    const produto = produtos.find((p) => p.id === id);
-    return produto ? produto.nome || produto.name : `Produto #${id}`;
+    const produto = produtos.find((p) => Number(p.id) === Number(id));
+    return produto ? produto.nome : `Produto #${id}`;
   }
 
   return (
@@ -61,23 +62,28 @@ export default function ListarPedidosPage() {
 
       <div className={styles.grade}>
         {pedidos.map((pedido) => {
+          // A API retorna "pedido_numero" no GET /itens_pedido
           const itensDestePedido = itens.filter(
-            (i) => (i.pedido_id || i.pedidoId) === pedido.id
+            (i) => Number(i.pedido_numero ?? i.pedido_id) === Number(pedido.id)
           );
 
           return (
             <div key={pedido.id} className={styles.card}>
-              <span className={styles.etiqueta}>Pedido #{pedido.id}</span>
-              <h2>{obterNomeCliente(pedido.cliente_id || pedido.clienteId)}</h2>
+              <span className={styles.etiqueta}>
+                Pedido #{pedido.id} • {pedido.status || "pendente"}
+              </span>
+              <h2>{obterNomeCliente(pedido.cliente_id)}</h2>
 
               <h4 className={styles.tituloItens}>Itens do Pedido</h4>
 
               {itensDestePedido.length > 0 ? (
                 <ul className={styles.listaItens}>
-                  {itensDestePedido.map((item, idx) => (
-                    <li key={item.id || idx} className={styles.itemLinha}>
-                      <span>{obterNomeProduto(item.produto_id || item.produtoId)}</span>
-                      <strong>{item.quantidade} un.</strong>
+                  {itensDestePedido.map((item) => (
+                    <li key={item.id} className={styles.itemLinha}>
+                      <span>{obterNomeProduto(item.produto_id)}</span>
+                      <strong>
+                        {item.quantidade}x (R$ {Number(item.preco_unitario).toFixed(2)})
+                      </strong>
                     </li>
                   ))}
                 </ul>

@@ -11,7 +11,7 @@ export default function CriarPedidoPage() {
   const [clientes, setClientes] = useState([]);
   const [produtos, setProdutos] = useState([]);
 
-  const [clienteId, setClienteId] = useState("");
+  const [clienteId, setClienteId] = useState("");  
   const [produtoId, setProdutoId] = useState("");
   const [quantidade, setQuantidade] = useState(1);
 
@@ -26,9 +26,9 @@ export default function CriarPedidoPage() {
           buscarDados("/clientes"),
           buscarDados("/produtos"),
         ]);
-        setClientes(Array.isArray(resClientes) ? resClientes : resClientes.data || []);
-        setProdutos(Array.isArray(resProdutos) ? resProdutos : resProdutos.data || []);
-      } catch {
+        setClientes(resClientes);
+        setProdutos(resProdutos);
+      } catch (e) {
         setErro("Não foi possível carregar clientes e produtos.");
       }
     }
@@ -45,8 +45,9 @@ export default function CriarPedidoPage() {
       ...carrinho,
       {
         produto_id: prodEncontrado.id,
-        nome: prodEncontrado.nome || prodEncontrado.name,
+        nome: prodEncontrado.nome,
         quantidade: Number(quantidade),
+        preco_unitario: Number(prodEncontrado.preco),
       },
     ]);
 
@@ -70,23 +71,26 @@ export default function CriarPedidoPage() {
     setErro("");
 
     try {
+            // 1. Cria o pedido
       const pedidoCriado = await enviarDados("/pedidos", {
         cliente_id: Number(clienteId),
       });
 
-      const idNovoPedido = pedidoCriado.id || pedidoCriado.data?.id;
+      const idNovoPedido = Number(pedidoCriado.id || pedidoCriado.data?.id);
 
+      // 2. Cria cada item vinculado ao pedido
       for (const item of carrinho) {
         await enviarDados("/itens_pedido", {
           pedido_id: idNovoPedido,
           produto_id: Number(item.produto_id),
-          quantidade: item.quantidade,
+          quantidade: Number(item.quantidade),
+          preco_unitario: Number(item.preco_unitario),
         });
       }
 
       router.push("/pedidos");
-    } catch {
-      setErro("Erro ao registrar o pedido.");
+    } catch (e) {
+      setErro(e.message || "Erro ao registrar o pedido.");
     } finally {
       setSalvando(false);
     }
@@ -105,7 +109,7 @@ export default function CriarPedidoPage() {
             <option value="">Selecione um cliente</option>
             {clientes.map((c) => (
               <option key={c.id} value={c.id}>
-                {c.nome || c.name}
+                {c.nome}
               </option>
             ))}
           </select>
@@ -117,7 +121,7 @@ export default function CriarPedidoPage() {
             <option value="">Selecione um produto</option>
             {produtos.map((p) => (
               <option key={p.id} value={p.id}>
-                {p.nome || p.name}
+                {p.nome} — R$ {Number(p.preco).toFixed(2)}
               </option>
             ))}
           </select>
@@ -142,7 +146,7 @@ export default function CriarPedidoPage() {
             {carrinho.map((item, idx) => (
               <div key={idx} className={styles.itemLinha}>
                 <span>
-                  <strong>{item.quantidade}x</strong> {item.nome}
+                  <strong>{item.quantidade}x</strong> {item.nome} (R$ {item.preco_unitario.toFixed(2)})
                 </span>
                 <button
                   type="button"
